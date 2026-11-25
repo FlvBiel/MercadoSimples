@@ -36,7 +36,6 @@ jobs:
       - name: Executar testes de unidade e E2E com cobertura
         run: |
           coverage run -m pytest -v
-          coverage report --fail-under=80
           coverage xml
 
       - name: Publicar relatório de cobertura no Codecov

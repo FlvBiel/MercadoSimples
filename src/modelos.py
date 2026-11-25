@@ -43,3 +43,45 @@ class Usuario:
         if not self.eh_anunciante():
             raise ErroValidacao("Apenas contas de anunciante possuem saldo de vendas.")
         self.saldo = (self.saldo + quantia).quantize(Decimal("0.01"))
+
+@dataclass
+class Produto:
+    """Representa um item anunciado para venda por um anunciante."""
+
+    anunciante_id: int
+    titulo: str
+    descricao: str
+    preco: Decimal
+    estoque: int
+    categoria: str = "Outros"
+    imagem_url: str = ""
+    ativo: bool = True
+    nome_anunciante: str = ""
+    id: Optional[int] = None
+
+    def esta_disponivel(self, quantidade: int = 1) -> bool:
+        """Verifica se o produto está ativo e possui estoque suficiente."""
+        return self.ativo and quantidade >= 1 and self.estoque >= quantidade
+
+    def alterar_preco(self, novo_preco: Decimal | float | str) -> None:
+        """Atualiza o preço do produto após validação."""
+        self.preco = validar_preco(novo_preco)
+
+    def reduzir_estoque(self, quantidade: int) -> None:
+        """Deduz unidades vendidas do estoque do produto."""
+        qtd = validar_quantidade_compra(quantidade)
+        if not self.ativo:
+            raise ErroEstoqueInsuficiente(f"O produto '{self.titulo}' não está mais ativo.")
+        if qtd > self.estoque:
+            raise ErroEstoqueInsuficiente(
+                f"Estoque insuficiente para '{self.titulo}' (disponível: {self.estoque})."
+            )
+        self.estoque -= qtd
+
+    def desativar(self) -> None:
+        """Marca o anúncio como inativo (removido do catálogo público)."""
+        self.ativo = False
+
+    def caminho_imagem_exibicao(self) -> str:
+        """Retorna a imagem cadastrada ou a ilustração padrão do sistema."""
+        return self.imagem_url if self.imagem_url else IMAGEM_PADRAO_PRODUTO
