@@ -6,6 +6,7 @@ import pytest
 from src.excecoes import ErroEstoqueInsuficiente, ErroValidacao
 from src.modelos import (
     IMAGEM_PADRAO_PRODUTO,
+    Carrinho,
     Produto,
     Usuario,
 )
@@ -75,3 +76,40 @@ def test_produto_retorna_imagem_padrao_quando_sem_foto_propria() -> None:
 
     assert sem_foto.caminho_imagem_exibicao() == IMAGEM_PADRAO_PRODUTO
     assert com_foto.caminho_imagem_exibicao() == "https://img.com/b.png"
+
+def test_carrinho_soma_quantidades_do_mesmo_produto_e_calcula_total() -> None:
+    p1 = Produto(10, "Mouse", "", Decimal("50.00"), 5, id=1)
+    p2 = Produto(10, "Teclado", "", Decimal("120.50"), 5, id=2)
+
+    carrinho = Carrinho()
+    carrinho.adicionar(p1, 2)
+    carrinho.adicionar(p1, 1)
+    carrinho.adicionar(p2, 1)
+
+    assert carrinho.quantidade_total_itens() == 4
+    assert carrinho.calcular_total() == Decimal("270.50")
+
+
+def test_carrinho_impede_adicionar_quantidade_acima_do_estoque() -> None:
+    produto = Produto(10, "Monitor", "", Decimal("700.00"), 2, id=1)
+    carrinho = Carrinho()
+
+    with pytest.raises(ErroEstoqueInsuficiente):
+        carrinho.adicionar(produto, 3)
+
+
+def test_carrinho_atualiza_remove_e_limpa_itens() -> None:
+    p1 = Produto(10, "Cabo HDMI", "", Decimal("30.00"), 10, id=1)
+    p2 = Produto(10, "Adaptador", "", Decimal("20.00"), 10, id=2)
+
+    carrinho = Carrinho()
+    carrinho.adicionar(p1, 1)
+    carrinho.adicionar(p2, 2)
+    carrinho.atualizar_quantidade(1, 4)
+    assert carrinho.calcular_total() == Decimal("160.00")
+
+    carrinho.remover(2)
+    assert carrinho.para_dicionario() == {"1": 4}
+
+    carrinho.limpar()
+    assert carrinho.esta_vazio() is True
