@@ -1,0 +1,1 @@
+"""Pacote principal da plataforma de e-commerce MercadoSimples."""
