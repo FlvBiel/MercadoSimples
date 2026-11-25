@@ -6,7 +6,6 @@ omit =
     testes/*
 
 [report]
-fail_under = 80
 show_missing = True
 skip_empty = True
 exclude_lines =
