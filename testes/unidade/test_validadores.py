@@ -1,5 +1,6 @@
 """Testes de unidade para as funções públicas de validação e formatação."""
 
+from decimal import Decimal
 import pytest
 
 from src.excecoes import ErroValidacao
