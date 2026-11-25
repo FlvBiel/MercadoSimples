@@ -1,0 +1,29 @@
+# Ambiente virtual
+.venv/
+venv/
+ENV/
+
+# Bytecode e cache Python
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Cobertura de testes
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+
+# Banco de dados local e uploads
+*.db
+*.sqlite3
+instance/
+src/static/uploads/*
+!src/static/uploads/.gitkeep
+
+# Artefatos Playwright
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
