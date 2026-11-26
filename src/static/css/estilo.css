@@ -1,0 +1,223 @@
+:root {
+    --cor-primaria: #0f766e;
+    --cor-primaria-hover: #115e59;
+    --cor-secundaria: #1e293b;
+    --cor-fundo: #f8fafc;
+    --cor-superficie: #ffffff;
+    --cor-borda: #e2e8f0;
+    --cor-texto: #0f172a;
+    --cor-texto-suave: #475569;
+    --cor-perigo: #dc2626;
+    --cor-perigo-hover: #b91c1c;
+    --cor-sucesso-bg: #dcfce7;
+    --cor-sucesso-texto: #166534;
+    --cor-erro-bg: #fee2e2;
+    --cor-erro-texto: #991b1b;
+    --cor-aviso-bg: #fef9c3;
+    --cor-aviso-texto: #854d0e;
+    --raio: 10px;
+    --sombra: 0 2px 8px rgba(15, 23, 42, 0.06);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    background-color: var(--cor-fundo);
+    color: var(--cor-texto);
+    line-height: 1.55;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+a {
+    color: var(--cor-primaria);
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+.container {
+    width: 100%;
+    max-width: 1140px;
+    margin: 0 auto;
+    padding: 0 1.25rem;
+}
+
+/* Cabeçalho e Navegação */
+.cabecalho {
+    background-color: var(--cor-secundaria);
+    color: #ffffff;
+    padding: 0.9rem 0;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+}
+
+.cabecalho-interno {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.marca {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: -0.02em;
+}
+
+.marca:hover {
+    text-decoration: none;
+    opacity: 0.92;
+}
+
+.marca span {
+    color: #5eead4;
+}
+
+.menu-nav {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    flex-wrap: wrap;
+}
+
+.menu-nav a {
+    color: #e2e8f0;
+    font-size: 0.95rem;
+    font-weight: 500;
+    padding: 0.4rem 0.7rem;
+    border-radius: 6px;
+    transition: background-color 0.15s;
+}
+
+.menu-nav a:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    text-decoration: none;
+}
+
+.pilula-saldo {
+    background-color: rgba(94, 234, 212, 0.16);
+    border: 1px solid rgba(94, 234, 212, 0.4);
+    color: #99f6e4 !important;
+    font-weight: 700 !important;
+}
+
+.pilula-usuario {
+    font-size: 0.85rem;
+    color: #94a3b8;
+    padding: 0 0.35rem;
+}
+
+/* Conteúdo Principal */
+main.conteudo {
+    flex: 1;
+    padding: 2rem 0 3rem;
+}
+
+.rodape {
+    background-color: #ffffff;
+    border-top: 1px solid var(--cor-borda);
+    padding: 1.25rem 0;
+    text-align: center;
+    font-size: 0.9rem;
+    color: var(--cor-texto-suave);
+}
+
+/* Alertas */
+.alertas {
+    margin-bottom: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.alerta {
+    padding: 0.85rem 1.1rem;
+    border-radius: var(--raio);
+    font-weight: 500;
+    border: 1px solid transparent;
+}
+
+.alerta-sucesso {
+    background-color: var(--cor-sucesso-bg);
+    color: var(--cor-sucesso-texto);
+    border-color: #86efac;
+}
+
+.alerta-erro {
+    background-color: var(--cor-erro-bg);
+    color: var(--cor-erro-texto);
+    border-color: #fca5a5;
+}
+
+.alerta-aviso {
+    background-color: var(--cor-aviso-bg);
+    color: var(--cor-aviso-texto);
+    border-color: #fde047;
+}
+
+/* Botões */
+.botao {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 0.6rem 1.15rem;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.15s, opacity 0.15s;
+}
+
+.botao:hover {
+    text-decoration: none;
+}
+
+.botao-primario {
+    background-color: var(--cor-primaria);
+    color: #ffffff;
+}
+
+.botao-primario:hover {
+    background-color: var(--cor-primaria-hover);
+}
+
+.botao-secundario {
+    background-color: #ffffff;
+    color: var(--cor-texto);
+    border-color: var(--cor-borda);
+}
+
+.botao-secundario:hover {
+    background-color: #f1f5f9;
+}
+
+.botao-perigo {
+    background-color: var(--cor-perigo);
+    color: #ffffff;
+}
+
+.botao-perigo:hover {
+    background-color: var(--cor-perigo-hover);
+}
+
+.botao-pequeno {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.85rem;
+}
+
+.botao-bloco {
+    width: 100%;
+}
