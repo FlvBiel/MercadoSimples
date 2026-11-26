@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% block titulo %}Painel do Anunciante | MercadoSimples{% endblock %}
+
+{% block conteudo %}
+<div class="topo-pagina">
+    <div>
+        <h1>Meus Produtos Anunciados</h1>
+        <p class="subtitulo">Gerencie preços, estoque e acompanhe suas vendas.</p>
+    </div>
+    <a href="{{ url_for('anunciante.anunciar') }}" class="botao botao-primario">+ Anunciar Produto</a>
+</div>
+
+<div class="grade-resumo">
+    <div class="cartao-metrica">
+        <div class="rotulo">Saldo a Receber</div>
+        <div class="valor" data-testid="valor-saldo-painel">{{ resumo.saldo_disponivel | moeda }}</div>
+        <a href="{{ url_for('anunciante.saldo') }}" style="font-size: 0.85rem;">Ver extrato de vendas &rarr;</a>
+    </div>
+    <div class="cartao-metrica">
+        <div class="rotulo">Anúncios Ativos</div>
+        <div class="valor">{{ anuncios | length }}</div>
+    </div>
+    <div class="cartao-metrica">
+        <div class="rotulo">Unidades Vendidas</div>
+        <div class="valor">{{ resumo.itens_vendidos }}</div>
+    </div>
+</div>
+
+{% if anuncios %}
+    <div class="painel-caixa tabela-responsiva">
+        <table class="tabela">
+            <thead>
+                <tr>
+                    <th>Foto</th>
+                    <th>Produto</th>
+                    <th>Categoria</th>
+                    <th>Estoque</th>
+                    <th>Alterar Preço (R$)</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in anuncios %}
+                    <tr>
+                        <td>
+                            <img
+                                src="{{ item.caminho_imagem_exibicao() }}"
+                                alt="{{ item.titulo }}"
+                                class="miniatura-tabela"
+                            >
+                        </td>
+                        <td>
+                            <a href="{{ url_for('catalogo.detalhe_produto', produto_id=item.id) }}">
+                                <strong>{{ item.titulo }}</strong>
+                            </a>
+                            <div style="font-size: 0.85rem; color: #64748b;">
+                                Atual: {{ item.preco | moeda }}
+                            </div>
+                        </td>
+                        <td>{{ item.categoria }}</td>
+                        <td>{{ item.estoque }}</td>
+                        <td>
+                            <form
+                                method="post"
+                                action="{{ url_for('anunciante.alterar_preco', produto_id=item.id) }}"
+                                class="form-inline"
+                            >
+                                <input
+                                    type="text"
+                                    name="preco"
+                                    value="{{ '%.2f'|format(item.preco) }}"
+                                    aria-label="Novo preço de {{ item.titulo }}"
+                                    required
+                                >
+                                <button type="submit" class="botao botao-secundario botao-pequeno">
+                                    Salvar Preço
+                                </button>
+                            </form>
+                        </td>
+                        <td>
+                            <div class="form-inline">
+                                <a
+                                    href="{{ url_for('anunciante.editar', produto_id=item.id) }}"
+                                    class="botao botao-secundario botao-pequeno"
+                                >
+                                    Editar
+                                </a>
+                                <form
+                                    method="post"
+                                    action="{{ url_for('anunciante.remover', produto_id=item.id) }}"
+                                >
+                                    <button type="submit" class="botao botao-perigo botao-pequeno">
+                                        Remover
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% else %}
+    <div class="painel-caixa estado-vazio">
+        <h2>Você ainda não possui anúncios ativos</h2>
+        <p style="margin-bottom: 1rem;">Publique seu primeiro item para começar a vender na plataforma.</p>
+        <a href="{{ url_for('anunciante.anunciar') }}" class="botao botao-primario">Criar Primeiro Anúncio</a>
+    </div>
+{% endif %}
+{% endblock %}
