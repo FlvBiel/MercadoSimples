@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" width="400" height="300" role="img" aria-label="Imagem padrão de produto">
+  <rect width="400" height="300" fill="#e2e8f0"/>
+  <rect x="130" y="75" width="140" height="110" rx="12" fill="#cbd5e1" stroke="#64748b" stroke-width="4"/>
+  <circle cx="170" cy="112" r="14" fill="#94a3b8"/>
+  <path d="M142 170 L185 128 L215 156 L236 138 L258 170 Z" fill="#64748b"/>
+  <text x="200" y="225" text-anchor="middle" font-family="sans-serif" font-size="16" font-weight="600" fill="#475569">MercadoSimples</text>
+  <text x="200" y="248" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#64748b">Produto sem foto</text>
+</svg>
