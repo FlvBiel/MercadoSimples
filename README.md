@@ -2,8 +2,8 @@
 
 Integrantes:
 
-Flavio Gabriel Soares Melo
-Manuel Junio Ferraz Cardoso
+- Flavio Gabriel Soares Melo
+- Manuel Junio Ferraz Cardoso
 
 ## Sobre o sistema
 
@@ -23,6 +23,10 @@ O sistema de pagamento é intencionalmente simplificado para fins acadêmicos: a
 - **Playwright (Python)**: framework utilizado nos testes *end-to-end* (E2E) com navegador Chromium real em modo *headless*.
 - **Coverage.py**: ferramenta utilizada para aferir a cobertura de código e linhas/ramificações (configurada para exigir cobertura ≥ 80% e gerar `coverage.xml` compatível com o Codecov).
 - **Gunicorn**: servidor WSGI pronto para publicação em plataformas de nuvem gratuitas (como Render ou Fly.io).
+
+## Uso de IA
+
+Foram utilizadas ferramentas de IA para desenvolvimento do sistema e criação dos testes, sempre com supervisão humana. Cada commit foi feito manualmente após revisão de todas as alterações sugeridas.
 
 ## Execução dos testes
 
