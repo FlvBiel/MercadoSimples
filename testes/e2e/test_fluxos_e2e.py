@@ -216,3 +216,64 @@ def test_e2e_cliente_seleciona_multiplos_itens_no_carrinho_e_paga_de_uma_vez(
     expect(pedido).to_contain_text("Mousepad Grande")
     expect(pedido).to_contain_text("Total pago: R$ 205,00")
     expect(pagina.get_by_role("link", name="Carrinho (0)")).to_be_visible()
+
+
+def test_e2e_saldo_do_anunciante_reflete_vendas_pagas_pelo_cliente(
+    pagina: Page,
+    servidor_vivo: tuple[str, ContinerServicos],
+) -> None:
+    url_base, servicos = servidor_vivo
+    anunciante = servicos.autenticacao.cadastrar_usuario(
+        "Atelier Musical", "musica@loja.com", "senha123", "anunciante"
+    )
+    assert anunciante.id is not None
+    servicos.catalogo.anunciar_produto(
+        anunciante.id, "Ukulele Acústico", "Madeira mogno", "220.00", 4, "Outros"
+    )
+
+    pagina.goto(f"{url_base}/cadastro")
+    pagina.get_by_label("Nome completo").fill("Rafael Souza")
+    pagina.get_by_label("E-mail").fill("rafael@cliente.com")
+    pagina.get_by_label("Senha").fill("senha123")
+    pagina.get_by_label("Tipo de conta").select_option("cliente")
+    pagina.get_by_role("button", name="Concluir Cadastro").click()
+
+    pagina.get_by_role("link", name="Ukulele Acústico").first.click()
+    pagina.get_by_label("Quantidade").fill("2")
+    pagina.get_by_role("button", name="Adicionar ao Carrinho").click()
+    pagina.get_by_role("button", name="Aprovar Pagamento e Finalizar Compra").click()
+    expect(pagina.get_by_text("Pagamento aprovado!")).to_be_visible()
+
+    pagina.get_by_role("link", name="Sair").click()
+
+    pagina.goto(f"{url_base}/entrar")
+    pagina.get_by_label("E-mail").fill("musica@loja.com")
+    pagina.get_by_label("Senha").fill("senha123")
+    pagina.get_by_role("button", name="Entrar").click()
+
+    expect(pagina.get_by_test_id("valor-saldo-painel")).to_have_text("R$ 440,00")
+    pagina.get_by_role("link", name="Saldo: R$ 440,00").click()
+
+    expect(pagina.get_by_test_id("saldo-total")).to_have_text("R$ 440,00")
+    expect(pagina.locator("table")).to_contain_text("Rafael Souza")
+    expect(pagina.locator("table")).to_contain_text("Ukulele Acústico")
+
+
+def test_e2e_controle_de_acesso_impede_cliente_de_acessar_rota_de_anuncio(
+    pagina: Page,
+    servidor_vivo: tuple[str, ContinerServicos],
+) -> None:
+    url_base, servicos = servidor_vivo
+    servicos.autenticacao.cadastrar_usuario(
+        "Cliente Comum", "comum@cliente.com", "senha123", "cliente"
+    )
+
+    pagina.goto(f"{url_base}/entrar")
+    pagina.get_by_label("E-mail").fill("comum@cliente.com")
+    pagina.get_by_label("Senha").fill("senha123")
+    pagina.get_by_role("button", name="Entrar").click()
+
+    pagina.goto(f"{url_base}/anunciar")
+    expect(
+        pagina.get_by_text("Apenas contas de anunciante podem acessar esta área.")
+    ).to_be_visible()
