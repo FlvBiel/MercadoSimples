@@ -26,7 +26,7 @@ O sistema de pagamento é intencionalmente simplificado para fins acadêmicos: a
 
 ## Uso de IA
 
-Foram utilizadas ferramentas de IA para desenvolvimento do sistema e criação dos testes, sempre com supervisão humana. Cada commit foi feito manualmente após revisão de todas as alterações sugeridas.
+Foram utilizadas ferramentas de IA para desenvolvimento do sistema e criação dos testes, sempre com supervisão humana. Cada commit foi feito manualmente após revisão de todas as alterações sugeridas. As ferramentas utilizadas foram o Github Copilot Chat (no Visual Studio Code) e o Claude Code.
 
 ## Execução dos testes
 
