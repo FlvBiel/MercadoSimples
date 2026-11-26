@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block titulo %}MercadoSimples{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/estilo.css') }}">
+</head>
+<body>
+    <header class="cabecalho">
+        <div class="container cabecalho-interno">
+            <a href="{{ url_for('catalogo.inicio') }}" class="marca">Mercado<span>Simples</span></a>
+            <nav class="menu-nav" aria-label="Navegação principal">
+                <a href="{{ url_for('catalogo.inicio') }}">Produtos</a>
+                {% if usuario_atual %}
+                    {% if usuario_atual.eh_anunciante() %}
+                        <a href="{{ url_for('anunciante.painel') }}">Meus Anúncios</a>
+                        <a href="{{ url_for('anunciante.anunciar') }}">Anunciar Produto</a>
+                        <a href="{{ url_for('anunciante.saldo') }}" class="pilula-saldo">
+                            Saldo: {{ usuario_atual.saldo | moeda }}
+                        </a>
+                    {% else %}
+                        <a href="{{ url_for('cliente.ver_carrinho') }}">
+                            Carrinho ({{ quantidade_carrinho }})
+                        </a>
+                        <a href="{{ url_for('cliente.meus_pedidos') }}">Meus Pedidos</a>
+                    {% endif %}
+                    <span class="pilula-usuario">
+                        {{ usuario_atual.nome }} ({{ usuario_atual.perfil }})
+                    </span>
+                    <a href="{{ url_for('autenticacao.sair') }}">Sair</a>
+                {% else %}
+                    <a href="{{ url_for('autenticacao.entrar') }}">Entrar</a>
+                    <a href="{{ url_for('autenticacao.cadastro') }}">Criar Conta</a>
+                {% endif %}
+            </nav>
+        </div>
+    </header>
+
+    <main class="conteudo">
+        <div class="container">
+            {% with mensagens = get_flashed_messages(with_categories=true) %}
+                {% if mensagens %}
+                    <div class="alertas" role="status">
+                        {% for categoria, texto in mensagens %}
+                            <div class="alerta alerta-{{ categoria }}">{{ texto }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            {% block conteudo %}{% endblock %}
+        </div>
+    </main>
+
+    <footer class="rodape">
+        <div class="container">
+            MercadoSimples &mdash; Plataforma acadêmica de compra e venda de produtos.
+        </div>
+    </footer>
+</body>
+</html>
