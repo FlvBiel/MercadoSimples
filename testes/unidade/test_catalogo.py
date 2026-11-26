@@ -117,3 +117,53 @@ def test_anunciante_nao_pode_remover_produto_de_terceiro(
 
     with pytest.raises(ErroPermissao):
         servicos.catalogo.remover_produto(intruso.id, produto_padrao.id)
+
+def test_pesquisar_produtos_filtra_por_termo_no_titulo_ou_descricao(
+    servicos: ContinerServicos,
+    anunciante_padrao: Usuario,
+) -> None:
+    assert anunciante_padrao.id is not None
+    servicos.catalogo.anunciar_produto(
+        anunciante_padrao.id, "Violão Clássico", "Cordas de nylon", "350.00", 2, "Outros"
+    )
+    servicos.catalogo.anunciar_produto(
+        anunciante_padrao.id, "Bola Oficial", "Para futebol de campo", "90.00", 5, "Esportes"
+    )
+
+    resultado = servicos.catalogo.pesquisar_produtos(busca="nylon")
+    assert len(resultado) == 1
+    assert resultado[0].titulo == "Violão Clássico"
+
+
+def test_pesquisar_produtos_filtra_por_categoria_e_ordena_por_preco(
+    servicos: ContinerServicos,
+    anunciante_padrao: Usuario,
+) -> None:
+    assert anunciante_padrao.id is not None
+    servicos.catalogo.anunciar_produto(
+        anunciante_padrao.id, "Romance A", "", "60.00", 3, "Livros"
+    )
+    servicos.catalogo.anunciar_produto(
+        anunciante_padrao.id, "Contos B", "", "35.00", 3, "Livros"
+    )
+    servicos.catalogo.anunciar_produto(
+        anunciante_padrao.id, "Luminária", "", "20.00", 3, "Casa"
+    )
+
+    livros = servicos.catalogo.pesquisar_produtos(categoria="Livros", ordenacao="menor_preco")
+    assert [p.titulo for p in livros] == ["Contos B", "Romance A"]
+
+
+def test_listar_meus_anuncios_retorna_apenas_itens_ativos_do_anunciante(
+    servicos: ContinerServicos,
+    anunciante_padrao: Usuario,
+) -> None:
+    assert anunciante_padrao.id is not None
+    p1 = servicos.catalogo.anunciar_produto(anunciante_padrao.id, "Item 1", "", "10.00", 1)
+    p2 = servicos.catalogo.anunciar_produto(anunciante_padrao.id, "Item 2", "", "20.00", 1)
+    assert p1.id is not None
+
+    servicos.catalogo.remover_produto(anunciante_padrao.id, p1.id)
+    ativos = servicos.catalogo.listar_meus_anuncios(anunciante_padrao.id)
+
+    assert [p.id for p in ativos] == [p2.id]
