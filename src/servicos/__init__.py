@@ -3,5 +3,6 @@
 from src.servicos.servico_autenticacao import ServicoAutenticacao
 from src.servicos.servico_carrinho import ServicoCarrinho
 from src.servicos.servico_catalogo import ServicoCatalogo
+from src.servicos.servico_pagamento import ResultadoPagamento, SimuladorPagamento
 
-__all__ = ["ServicoAutenticacao", "ServicoCatalogo", "ServicoCarrinho"]
+__all__ = ["ServicoAutenticacao", "ServicoCatalogo", "ServicoCarrinho", "SimuladorPagamento", "ResultadoPagamento"]
