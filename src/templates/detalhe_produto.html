@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block titulo %}{{ produto.titulo }} | MercadoSimples{% endblock %}
+
+{% block conteudo %}
+<div style="margin-bottom: 1rem;">
+    <a href="{{ url_for('catalogo.inicio') }}">&larr; Voltar para o catálogo</a>
+</div>
+
+<section class="detalhe-grade">
+    <div>
+        <img
+            src="{{ produto.caminho_imagem_exibicao() }}"
+            alt="{{ produto.titulo }}"
+            class="detalhe-imagem"
+        >
+    </div>
+    <div class="detalhe-info">
+        <div>
+            <span class="etiqueta">{{ produto.categoria }}</span>
+            {% if produto.estoque > 0 %}
+                <span class="etiqueta etiqueta-estoque">{{ produto.estoque }} unidade(s) disponível(is)</span>
+            {% else %}
+                <span class="etiqueta etiqueta-esgotado">Produto esgotado</span>
+            {% endif %}
+        </div>
+
+        <h1>{{ produto.titulo }}</h1>
+        <p class="vendedor-produto">Vendido por <strong>{{ produto.nome_anunciante }}</strong></p>
+        <div class="preco-destaque">{{ produto.preco | moeda }}</div>
+
+        <p>{{ produto.descricao if produto.descricao else "Sem descrição adicional informada pelo anunciante." }}</p>
+
+        {% if usuario_atual and usuario_atual.eh_cliente() %}
+            {% if produto.estoque > 0 %}
+                <form method="post" action="{{ url_for('cliente.adicionar_carrinho', produto_id=produto.id) }}" class="form-compra-inline">
+                    <div>
+                        <label for="campo-quantidade">Quantidade</label>
+                        <input
+                            id="campo-quantidade"
+                            type="number"
+                            name="quantidade"
+                            min="1"
+                            max="{{ produto.estoque }}"
+                            value="1"
+                            required
+                        >
+                    </div>
+                    <button type="submit" class="botao botao-primario">Adicionar ao Carrinho</button>
+                </form>
+            {% endif %}
+        {% elif usuario_atual and usuario_atual.id == produto.anunciante_id %}
+            <div>
+                <a href="{{ url_for('anunciante.editar', produto_id=produto.id) }}" class="botao botao-secundario">
+                    Editar Meu Anúncio
+                </a>
+            </div>
+        {% elif not usuario_atual and produto.estoque > 0 %}
+            <div>
+                <a href="{{ url_for('autenticacao.entrar') }}" class="botao botao-primario">
+                    Entre como cliente para comprar
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
