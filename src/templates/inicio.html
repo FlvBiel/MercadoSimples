@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% block titulo %}Catálogo de Produtos | MercadoSimples{% endblock %}
+
+{% block conteudo %}
+<div class="topo-pagina">
+    <div>
+        <h1>Produtos Anunciados</h1>
+        <p class="subtitulo">Encontre itens vendidos por anunciantes de toda a plataforma.</p>
+    </div>
+    {% if usuario_atual and usuario_atual.eh_anunciante() %}
+        <a href="{{ url_for('anunciante.anunciar') }}" class="botao botao-primario">+ Novo Anúncio</a>
+    {% endif %}
+</div>
+
+<form method="get" action="{{ url_for('catalogo.inicio') }}" class="barra-filtros">
+    <div class="campo-filtro">
+        <label for="campo-busca">Buscar produto</label>
+        <input
+            id="campo-busca"
+            type="text"
+            name="busca"
+            value="{{ busca_atual }}"
+            placeholder="Ex.: fone, livro, cadeira..."
+        >
+    </div>
+    <div class="campo-filtro">
+        <label for="campo-categoria">Categoria</label>
+        <select id="campo-categoria" name="categoria">
+            <option value="">Todas as categorias</option>
+            {% for cat in categorias %}
+                <option value="{{ cat }}" {% if categoria_atual == cat %}selected{% endif %}>{{ cat }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="campo-filtro">
+        <label for="campo-ordenacao">Ordenar por</label>
+        <select id="campo-ordenacao" name="ordenacao">
+            <option value="recentes" {% if ordenacao_atual == 'recentes' %}selected{% endif %}>Mais recentes</option>
+            <option value="menor_preco" {% if ordenacao_atual == 'menor_preco' %}selected{% endif %}>Menor preço</option>
+            <option value="maior_preco" {% if ordenacao_atual == 'maior_preco' %}selected{% endif %}>Maior preço</option>
+        </select>
+    </div>
+    <button type="submit" class="botao botao-primario">Filtrar</button>
+    {% if busca_atual or categoria_atual or ordenacao_atual != 'recentes' %}
+        <a href="{{ url_for('catalogo.inicio') }}" class="botao botao-secundario">Limpar</a>
+    {% endif %}
+</form>
+
+{% if produtos %}
+    <div class="grade-produtos">
+        {% for produto in produtos %}
+            <article class="cartao-produto" data-testid="cartao-produto">
+                <a href="{{ url_for('catalogo.detalhe_produto', produto_id=produto.id) }}">
+                    <img
+                        src="{{ produto.caminho_imagem_exibicao() }}"
+                        alt="{{ produto.titulo }}"
+                        class="cartao-produto-imagem"
+                    >
+                </a>
+                <div class="cartao-produto-corpo">
+                    <div class="etiquetas-produto">
+                        <span class="etiqueta">{{ produto.categoria }}</span>
+                        {% if produto.estoque > 0 %}
+                            <span class="etiqueta etiqueta-estoque">Estoque: {{ produto.estoque }}</span>
+                        {% else %}
+                            <span class="etiqueta etiqueta-esgotado">Esgotado</span>
+                        {% endif %}
+                    </div>
+                    <a href="{{ url_for('catalogo.detalhe_produto', produto_id=produto.id) }}" class="titulo-produto">
+                        {{ produto.titulo }}
+                    </a>
+                    <span class="vendedor-produto">Anunciado por {{ produto.nome_anunciante }}</span>
+                    <div class="preco-produto">{{ produto.preco | moeda }}</div>
+                    <div class="acoes-cartao">
+                        <a href="{{ url_for('catalogo.detalhe_produto', produto_id=produto.id) }}" class="botao botao-secundario botao-pequeno">
+                            Ver detalhes
+                        </a>
+                        {% if usuario_atual and usuario_atual.eh_cliente() and produto.estoque > 0 %}
+                            <form method="post" action="{{ url_for('cliente.adicionar_carrinho', produto_id=produto.id) }}">
+                                <input type="hidden" name="quantidade" value="1">
+                                <button type="submit" class="botao botao-primario botao-pequeno">
+                                    Adicionar ao Carrinho
+                                </button>
+                            </form>
+                        {% endif %}
+                    </div>
+                </div>
+            </article>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="painel-caixa estado-vazio">
+        <h2>Nenhum produto encontrado</h2>
+        <p>Tente ajustar os filtros de busca ou volte mais tarde para conferir novos anúncios.</p>
+    </div>
+{% endif %}
+{% endblock %}

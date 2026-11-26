@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% block titulo %}
+    {% if modo == 'editar' %}Editar Anúncio{% else %}Novo Anúncio{% endif %} | MercadoSimples
+{% endblock %}
+
+{% block conteudo %}
+<div class="painel-caixa formulario-central" style="max-width: 640px;">
+    <h1 style="margin-bottom: 0.4rem;">
+        {% if modo == 'editar' %}Editar Produto Anunciado{% else %}Anunciar Novo Produto{% endif %}
+    </h1>
+    <p class="subtitulo" style="margin-bottom: 1.4rem;">
+        Preencha as informações do item que deseja disponibilizar à venda.
+    </p>
+
+    <form
+        method="post"
+        enctype="multipart/form-data"
+        action="{% if modo == 'editar' %}{{ url_for('anunciante.editar', produto_id=produto.id) }}{% else %}{{ url_for('anunciante.anunciar') }}{% endif %}"
+    >
+        <div class="grupo-campo">
+            <label for="campo-titulo">Título do produto</label>
+            <input
+                id="campo-titulo"
+                type="text"
+                name="titulo"
+                value="{{ formulario.titulo }}"
+                placeholder="Ex.: Teclado Mecânico Compacto"
+                required
+            >
+        </div>
+
+        <div class="grupo-campo">
+            <label for="campo-categoria">Categoria</label>
+            <select id="campo-categoria" name="categoria">
+                {% for cat in categorias %}
+                    <option value="{{ cat }}" {% if formulario.categoria == cat %}selected{% endif %}>{{ cat }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="grupo-campo">
+            <label for="campo-preco">Preço unitário (R$)</label>
+            <input
+                id="campo-preco"
+                type="text"
+                name="preco"
+                value="{{ formulario.preco }}"
+                placeholder="Ex.: 149,90"
+                required
+            >
+        </div>
+
+        <div class="grupo-campo">
+            <label for="campo-estoque">Quantidade em estoque</label>
+            <input
+                id="campo-estoque"
+                type="number"
+                name="estoque"
+                min="0"
+                value="{{ formulario.estoque }}"
+                required
+            >
+        </div>
+
+        <div class="grupo-campo">
+            <label for="campo-descricao">Descrição</label>
+            <textarea
+                id="campo-descricao"
+                name="descricao"
+                rows="4"
+                placeholder="Descreva estado de conservação, especificações, etc."
+            >{{ formulario.descricao }}</textarea>
+        </div>
+
+        <div class="grupo-campo">
+            <label for="campo-arquivo-imagem">Enviar foto do produto (opcional)</label>
+            <input
+                id="campo-arquivo-imagem"
+                type="file"
+                name="arquivo_imagem"
+                accept=".png,.jpg,.jpeg,.gif,.webp,.svg"
+            >
+            <span class="dica-campo">Formatos aceitos: PNG, JPG, GIF, WEBP ou SVG.</span>
+        </div>
+
+        <div class="grupo-campo">
+            <label for="campo-imagem-url">Ou informar URL da imagem (opcional)</label>
+            <input
+                id="campo-imagem-url"
+                type="text"
+                name="imagem_url"
+                value="{{ formulario.imagem_url }}"
+                placeholder="https://exemplo.com/foto-produto.jpg"
+            >
+        </div>
+
+        <div style="display: flex; gap: 0.75rem; margin-top: 1.25rem;">
+            <button type="submit" class="botao botao-primario">
+                {% if modo == 'editar' %}Salvar Alterações{% else %}Publicar Anúncio{% endif %}
+            </button>
+            <a href="{{ url_for('anunciante.painel') }}" class="botao botao-secundario">Cancelar</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block titulo %}Criar Conta | MercadoSimples{% endblock %}
+
+{% block conteudo %}
+<div class="painel-caixa formulario-central">
+    <h1 style="margin-bottom: 0.4rem;">Criar Nova Conta</h1>
+    <p class="subtitulo" style="margin-bottom: 1.4rem;">
+        Escolha se deseja comprar produtos como cliente ou vender itens como anunciante.
+    </p>
+
+    <form method="post" action="{{ url_for('autenticacao.cadastro') }}">
+        <div class="grupo-campo">
+            <label for="campo-nome">Nome completo</label>
+            <input
+                id="campo-nome"
+                type="text"
+                name="nome"
+                value="{{ formulario.nome }}"
+                placeholder="Ex.: Maria Oliveira"
+                required
+            >
+        </div>
+
+        <div class="grupo-campo">
+            <label for="campo-email">E-mail</label>
+            <input
+                id="campo-email"
+                type="email"
+                name="email"
+                value="{{ formulario.email }}"
+                placeholder="maria@exemplo.com"
+                required
+            >
+        </div>
+
+        <div class="grupo-campo">
+            <label for="campo-senha">Senha (mínimo 6 caracteres)</label>
+            <input
+                id="campo-senha"
+                type="password"
+                name="senha"
+                required
+            >
+        </div>
+
+        <div class="grupo-campo">
+            <label for="campo-perfil">Tipo de conta</label>
+            <select id="campo-perfil" name="perfil">
+                <option value="cliente" {% if formulario.perfil == 'cliente' %}selected{% endif %}>
+                    Cliente (quero comprar produtos)
+                </option>
+                <option value="anunciante" {% if formulario.perfil == 'anunciante' %}selected{% endif %}>
+                    Anunciante (quero anunciar e vender produtos)
+                </option>
+            </select>
+        </div>
+
+        <button type="submit" class="botao botao-primario botao-bloco">Concluir Cadastro</button>
+    </form>
+
+    <p style="margin-top: 1.2rem; text-align: center; font-size: 0.92rem;">
+        Já tem conta? <a href="{{ url_for('autenticacao.entrar') }}">Fazer login</a>
+    </p>
+</div>
+{% endblock %}

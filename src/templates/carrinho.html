@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% block titulo %}Meu Carrinho | MercadoSimples{% endblock %}
+
+{% block conteudo %}
+<div class="topo-pagina">
+    <div>
+        <h1>Carrinho de Compras</h1>
+        <p class="subtitulo">Revise seus itens selecionados e realize o pagamento único.</p>
+    </div>
+    <a href="{{ url_for('catalogo.inicio') }}" class="botao botao-secundario">Continuar Comprando</a>
+</div>
+
+{% if not carrinho.esta_vazio() %}
+    <div class="layout-carrinho">
+        <div class="painel-caixa tabela-responsiva">
+            <table class="tabela">
+                <thead>
+                    <tr>
+                        <th>Produto</th>
+                        <th>Preço Unit.</th>
+                        <th>Quantidade</th>
+                        <th>Subtotal</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in carrinho.itens %}
+                        <tr>
+                            <td>
+                                <a href="{{ url_for('catalogo.detalhe_produto', produto_id=item.produto.id) }}">
+                                    <strong>{{ item.produto.titulo }}</strong>
+                                </a>
+                            </td>
+                            <td>{{ item.produto.preco | moeda }}</td>
+                            <td>
+                                <form
+                                    method="post"
+                                    action="{{ url_for('cliente.atualizar_carrinho', produto_id=item.produto.id) }}"
+                                    class="form-inline"
+                                >
+                                    <input
+                                        type="number"
+                                        name="quantidade"
+                                        min="1"
+                                        max="{{ item.produto.estoque }}"
+                                        value="{{ item.quantidade }}"
+                                        aria-label="Quantidade de {{ item.produto.titulo }}"
+                                        required
+                                    >
+                                    <button type="submit" class="botao botao-secundario botao-pequeno">
+                                        Atualizar
+                                    </button>
+                                </form>
+                            </td>
+                            <td><strong>{{ item.subtotal | moeda }}</strong></td>
+                            <td>
+                                <form
+                                    method="post"
+                                    action="{{ url_for('cliente.remover_carrinho', produto_id=item.produto.id) }}"
+                                >
+                                    <button type="submit" class="botao botao-perigo botao-pequeno">
+                                        Remover
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <div style="margin-top: 1rem;">
+                <form method="post" action="{{ url_for('cliente.limpar_carrinho') }}">
+                    <button type="submit" class="botao botao-secundario botao-pequeno">
+                        Esvaziar Carrinho
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <aside class="painel-caixa resumo-compra">
+            <h2>Resumo do Pedido</h2>
+            <p>Itens no carrinho: <strong>{{ carrinho.quantidade_total_itens() }}</strong></p>
+            <div class="linha-total">
+                <span>Total</span>
+                <span data-testid="total-carrinho">{{ carrinho.calcular_total() | moeda }}</span>
+            </div>
+            <div class="aviso-pagamento">
+                Pagamento simplificado: ao clicar no botão abaixo, o pagamento de todos os itens
+                será aprovado instantaneamente (sem cobrança financeira real).
+            </div>
+            <form method="post" action="{{ url_for('cliente.finalizar_compra') }}">
+                <button type="submit" class="botao botao-primario botao-bloco">
+                    Aprovar Pagamento e Finalizar Compra
+                </button>
+            </form>
+        </aside>
+    </div>
+{% else %}
+    <div class="painel-caixa estado-vazio">
+        <h2>Seu carrinho está vazio</h2>
+        <p style="margin-bottom: 1rem;">Explore o catálogo e adicione produtos para comprar.</p>
+        <a href="{{ url_for('catalogo.inicio') }}" class="botao botao-primario">Explorar Produtos</a>
+    </div>
+{% endif %}
+{% endblock %}

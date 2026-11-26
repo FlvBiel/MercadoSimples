@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block titulo %}Meu Saldo e Vendas | MercadoSimples{% endblock %}
+
+{% block conteudo %}
+<div class="topo-pagina">
+    <div>
+        <h1>Saldo e Extrato de Vendas</h1>
+        <p class="subtitulo">Valores creditados automaticamente a cada compra paga pelos clientes.</p>
+    </div>
+    <a href="{{ url_for('anunciante.painel') }}" class="botao botao-secundario">&larr; Meus Anúncios</a>
+</div>
+
+<div class="grade-resumo">
+    <div class="cartao-metrica">
+        <div class="rotulo">Saldo Total a Receber</div>
+        <div class="valor" data-testid="saldo-total">{{ resumo.saldo_disponivel | moeda }}</div>
+    </div>
+    <div class="cartao-metrica">
+        <div class="rotulo">Vendas Realizadas</div>
+        <div class="valor">{{ resumo.total_vendas }}</div>
+    </div>
+    <div class="cartao-metrica">
+        <div class="rotulo">Itens Vendidos</div>
+        <div class="valor">{{ resumo.itens_vendidos }}</div>
+    </div>
+</div>
+
+{% if resumo.vendas %}
+    <div class="painel-caixa tabela-responsiva">
+        <h2 style="margin-bottom: 1rem; font-size: 1.2rem;">Histórico de Vendas Recebidas</h2>
+        <table class="tabela">
+            <thead>
+                <tr>
+                    <th>Pedido</th>
+                    <th>Data</th>
+                    <th>Produto</th>
+                    <th>Comprador</th>
+                    <th>Qtd.</th>
+                    <th>Preço Unit.</th>
+                    <th>Valor a Receber</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for venda in resumo.vendas %}
+                    <tr>
+                        <td>#{{ venda.pedido_id }}</td>
+                        <td>{{ venda.criado_em }}</td>
+                        <td><strong>{{ venda.titulo_produto }}</strong></td>
+                        <td>{{ venda.nome_comprador }}</td>
+                        <td>{{ venda.quantidade }}</td>
+                        <td>{{ venda.preco_unitario | moeda }}</td>
+                        <td><strong>{{ venda.subtotal | moeda }}</strong></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% else %}
+    <div class="painel-caixa estado-vazio">
+        <h2>Nenhuma venda registrada até o momento</h2>
+        <p>Assim que um cliente comprar algum produto seu, o valor aparecerá aqui no seu saldo.</p>
+    </div>
+{% endif %}
+{% endblock %}

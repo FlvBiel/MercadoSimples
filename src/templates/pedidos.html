@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block titulo %}Meus Pedidos | MercadoSimples{% endblock %}
+
+{% block conteudo %}
+<div class="topo-pagina">
+    <div>
+        <h1>Meus Pedidos</h1>
+        <p class="subtitulo">Histórico das suas compras com pagamento aprovado.</p>
+    </div>
+    <a href="{{ url_for('catalogo.inicio') }}" class="botao botao-primario">Nova Compra</a>
+</div>
+
+{% if pedidos %}
+    {% for pedido in pedidos %}
+        <section class="painel-caixa cartao-pedido" data-testid="cartao-pedido">
+            <div class="cabecalho-pedido">
+                <div>
+                    <strong>Pedido #{{ pedido.id }}</strong> &mdash; {{ pedido.criado_em }}
+                    <span class="etiqueta etiqueta-estoque" style="margin-left: 0.4rem;">
+                        {{ pedido.status | upper }}
+                    </span>
+                </div>
+                <div style="font-size: 0.86rem; color: #475569;">
+                    Transação: <code>{{ pedido.codigo_transacao }}</code>
+                </div>
+            </div>
+
+            <table class="tabela">
+                <thead>
+                    <tr>
+                        <th>Produto</th>
+                        <th>Quantidade</th>
+                        <th>Preço Unitário</th>
+                        <th>Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in pedido.itens %}
+                        <tr>
+                            <td>{{ item.titulo_produto }}</td>
+                            <td>{{ item.quantidade }}</td>
+                            <td>{{ item.preco_unitario | moeda }}</td>
+                            <td>{{ item.subtotal | moeda }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <div style="text-align: right; margin-top: 0.85rem; font-size: 1.15rem; font-weight: 800;">
+                Total pago: {{ pedido.total | moeda }}
+            </div>
+        </section>
+    {% endfor %}
+{% else %}
+    <div class="painel-caixa estado-vazio">
+        <h2>Você ainda não realizou nenhum pedido</h2>
+        <p style="margin-bottom: 1rem;">Adicione produtos ao carrinho para realizar sua primeira compra.</p>
+        <a href="{{ url_for('catalogo.inicio') }}" class="botao botao-primario">Ir às Compras</a>
+    </div>
+{% endif %}
+{% endblock %}

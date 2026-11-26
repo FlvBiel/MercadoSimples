@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block titulo %}Não Encontrado | MercadoSimples{% endblock %}
+
+{% block conteudo %}
+<div class="painel-caixa estado-vazio">
+    <h1>404 &mdash; {{ mensagem }}</h1>
+    <p style="margin: 0.75rem 0 1.25rem;">O conteúdo que você tentou acessar não existe ou foi removido.</p>
+    <a href="{{ url_for('catalogo.inicio') }}" class="botao botao-primario">Voltar ao Início</a>
+</div>
+{% endblock %}
