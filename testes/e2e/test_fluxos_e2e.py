@@ -131,3 +131,88 @@ def test_e2e_anunciante_altera_preco_e_remove_item_anunciado(
     expect(pagina.get_by_text("Cadeira Ergonômica")).to_be_visible()
     expect(pagina.get_by_text("R$ 699,90")).to_be_visible()
     expect(pagina.get_by_text("Luminária Antiga")).to_have_count(0)
+
+
+def test_e2e_visitante_busca_e_filtra_produtos_no_catalogo(
+    pagina: Page,
+    servidor_vivo: tuple[str, ContinerServicos],
+) -> None:
+    url_base, servicos = servidor_vivo
+    vendedor = servicos.autenticacao.cadastrar_usuario(
+        "Livraria e Cia", "contato@livraria.com", "senha123", "anunciante"
+    )
+    assert vendedor.id is not None
+    servicos.catalogo.anunciar_produto(
+        vendedor.id, "Arquitetura Limpa", "Livro de engenharia", "89.00", 5, "Livros"
+    )
+    servicos.catalogo.anunciar_produto(
+        vendedor.id, "Testes Automatizados em Python", "Guia prático", "65.00", 5, "Livros"
+    )
+    servicos.catalogo.anunciar_produto(
+        vendedor.id, "Raquete de Tênis", "Fibra de carbono", "320.00", 2, "Esportes"
+    )
+
+    pagina.goto(url_base)
+    expect(pagina.get_by_test_id("cartao-produto")).to_have_count(3)
+
+    pagina.get_by_label("Categoria").select_option("Livros")
+    pagina.get_by_label("Ordenar por").select_option("menor_preco")
+    pagina.get_by_role("button", name="Filtrar").click()
+
+    cartoes = pagina.get_by_test_id("cartao-produto")
+    expect(cartoes).to_have_count(2)
+    expect(cartoes.nth(0)).to_contain_text("Testes Automatizados em Python")
+    expect(cartoes.nth(1)).to_contain_text("Arquitetura Limpa")
+
+    pagina.get_by_label("Buscar produto").fill("Raquete")
+    pagina.get_by_label("Categoria").select_option("")
+    pagina.get_by_role("button", name="Filtrar").click()
+    expect(pagina.get_by_test_id("cartao-produto")).to_have_count(1)
+    expect(pagina.get_by_text("Raquete de Tênis")).to_be_visible()
+
+
+def test_e2e_cliente_seleciona_multiplos_itens_no_carrinho_e_paga_de_uma_vez(
+    pagina: Page,
+    servidor_vivo: tuple[str, ContinerServicos],
+) -> None:
+    url_base, servicos = servidor_vivo
+    vendedor = servicos.autenticacao.cadastrar_usuario(
+        "InfoStore", "vendas@infostore.com", "senha123", "anunciante"
+    )
+    assert vendedor.id is not None
+    servicos.catalogo.anunciar_produto(
+        vendedor.id, "Mouse Sem Fio", "Óptico 1600 DPI", "80.00", 10, "Eletrônicos"
+    )
+    servicos.catalogo.anunciar_produto(
+        vendedor.id, "Mousepad Grande", "Base emborrachada", "45.00", 10, "Eletrônicos"
+    )
+
+    pagina.goto(f"{url_base}/cadastro")
+    pagina.get_by_label("Nome completo").fill("Fernanda Lima")
+    pagina.get_by_label("E-mail").fill("fernanda@cliente.com")
+    pagina.get_by_label("Senha").fill("senha123")
+    pagina.get_by_label("Tipo de conta").select_option("cliente")
+    pagina.get_by_role("button", name="Concluir Cadastro").click()
+
+    cartao_mouse = pagina.locator("[data-testid='cartao-produto']", has_text="Mouse Sem Fio")
+    cartao_mouse.get_by_role("button", name="Adicionar ao Carrinho").click()
+
+    pagina.get_by_role("link", name="Continuar Comprando").click()
+    cartao_pad = pagina.locator("[data-testid='cartao-produto']", has_text="Mousepad Grande")
+    cartao_pad.get_by_role("button", name="Adicionar ao Carrinho").click()
+
+    campo_qtd_mouse = pagina.get_by_label("Quantidade de Mouse Sem Fio")
+    campo_qtd_mouse.fill("2")
+    linha_mouse = pagina.locator("tr", has_text="Mouse Sem Fio")
+    linha_mouse.get_by_role("button", name="Atualizar").click()
+
+    expect(pagina.get_by_test_id("total-carrinho")).to_have_text("R$ 205,00")
+
+    pagina.get_by_role("button", name="Aprovar Pagamento e Finalizar Compra").click()
+
+    expect(pagina.get_by_text("Pagamento aprovado!")).to_be_visible()
+    pedido = pagina.get_by_test_id("cartao-pedido")
+    expect(pedido).to_contain_text("Mouse Sem Fio")
+    expect(pedido).to_contain_text("Mousepad Grande")
+    expect(pedido).to_contain_text("Total pago: R$ 205,00")
+    expect(pagina.get_by_role("link", name="Carrinho (0)")).to_be_visible()
