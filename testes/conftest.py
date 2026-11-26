@@ -1,9 +1,13 @@
 """Fixtures compartilhadas para os testes de unidade e integração."""
 
+from pathlib import Path
 from typing import Iterator
 
 import pytest
+from flask import Flask
+from flask.testing import FlaskClient
 
+from src import criar_app
 from src.banco import BancoDados
 from src.modelos import Produto, Usuario
 from src.repositorios import (
@@ -85,3 +89,22 @@ def produto_padrao(servicos: ContinerServicos, anunciante_padrao: Usuario) -> Pr
         estoque=5,
         categoria="Eletrônicos",
     )
+
+
+@pytest.fixture()
+def app_teste(tmp_path: Path) -> Flask:
+    """Cria uma aplicação Flask configurada com banco e pasta temporários."""
+    return criar_app(
+        {
+            "TESTING": True,
+            "SECRET_KEY": "chave-secreta-de-teste",
+            "CAMINHO_BANCO": str(tmp_path / "mercado_teste.db"),
+            "PASTA_UPLOADS": str(tmp_path / "uploads"),
+        }
+    )
+
+
+@pytest.fixture()
+def cliente_web(app_teste: Flask) -> FlaskClient:
+    """Retorna um cliente HTTP de testes do Flask."""
+    return app_teste.test_client()
