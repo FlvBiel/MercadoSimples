@@ -1,5 +1,10 @@
 # MercadoSimples — Plataforma de E-Commerce
 
+Integrantes:
+
+Flavio Gabriel Soares Melo
+Manuel Junio Ferraz Cardoso
+
 ## Sobre o sistema
 
 O **MercadoSimples** é uma aplicação web de comércio eletrônico (marketplace) desenvolvida em Python na qual usuários interagem por meio de dois perfis de conta:
